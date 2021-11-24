@@ -307,11 +307,28 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
     height: "0px",
     // width: "100%",
   }
+
+  const [statesIdError, setStatesIdError] = React.useState(null)
+  const [citiesIdError, setCitiesIdError] = React.useState(null)
+
   const onSubmit = (data) => {
     console.log(data)
     const date = data.paymentInfo.month.split("/")
-    setPaymentForm({ ...data }, citiesId, statesId, date)
-    next()
+    if ((statesId, citiesId)) {
+      setPaymentForm({ ...data }, citiesId, statesId, date)
+      next()
+    } else {
+      if (!statesId) {
+        setStatesIdError(true)
+      } else {
+        setStatesIdError(false)
+      }
+      if (!citiesId) {
+        setCitiesIdError(true)
+      } else {
+        setCitiesIdError(false)
+      }
+    }
   }
 
   return (
@@ -552,12 +569,12 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                 fullWidth
                 error={errors.client?.address ? true : false}
               />
-              {errors.client?.address && (
-                <p className={classes.error}>
-                  {errors.client?.address.message}
-                </p>
-              )}
             </Grid>
+            {errors.client?.address && (
+              <p style={{ marginLeft: "10px" }} className={classes.error}>
+                {errors.client?.address.message}
+              </p>
+            )}
             <Grid item>
               <Autocomplete
                 id="combo-box-demo"
@@ -610,6 +627,7 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                 }}
                 name="stateId"
               />
+              {statesIdError && <p className={classes.error}>Required</p>}
             </Grid>
             <Grid item>
               <Grid
@@ -664,6 +682,7 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                     }}
                     name="cityId"
                   />
+                  {citiesIdError && <p className={classes.error}>Required</p>}
                 </Grid>
                 <Grid item xs={6}>
                   <CustomFormInputForPayment
