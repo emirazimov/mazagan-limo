@@ -1,12 +1,22 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux'
-import { Preloader } from './../Helpers/Preloader'
-import Grid from '@material-ui/core/Grid'
-import { Success } from '../../assets/icons'
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
-import ReservationFailed from './ReservationFailed'
-import { createReservation, logOut } from './../../Redux/form-reducer'
+import React, { useEffect } from "react"
+import { connect } from "react-redux"
+import { Preloader } from "./../Helpers/Preloader"
+import Grid from "@material-ui/core/Grid"
+import { Success } from "../../assets/icons"
+import Typography from "@material-ui/core/Typography"
+import Button from "@material-ui/core/Button"
+import ReservationFailed from "./ReservationFailed"
+import {
+  createReservation,
+  logOut,
+  setIsAirportPickupIncluded,
+} from "./../../Redux/form-reducer"
+import { setResetWidgetInputs } from "../../Redux/reset-widget-inputs-reducer"
+import { setGotAddressError } from "../../Redux/company-profile-reducer"
+
+// setResetWidgetInputs,
+// setGotAddressError,
+// setIsAirportPickupIncluded
 
 const Confirmation = ({
   createReservation,
@@ -19,10 +29,15 @@ const Confirmation = ({
   formSummary,
   logOut,
   failMessage,
+  setBackgroundScrollStop,
+  setResetWidgetInputs,
+  setGotAddressError,
+  setIsAirportPickupIncluded,
 }) => {
   useEffect(() => {
     createReservation(formSummary)
   }, [])
+  const textColor = "white"
 
   return (
     <>
@@ -31,11 +46,11 @@ const Confirmation = ({
       ) : isSuccess ? (
         <Grid
           container
-          direction='column'
+          direction="column"
           spacing={2}
-          justify='center'
-          alignItems='center'
-          style={{ height: '80vh', backgroundColor: 'black' }}
+          justify="center"
+          alignItems="center"
+          style={{ height: "80vh", backgroundColor: "black" }}
         >
           <Grid item>
             <Success />
@@ -44,16 +59,20 @@ const Confirmation = ({
                             <Typography variant='body2'>Success</Typography>
                         </Grid> */}
           <Grid item>
-            <Typography variant='body2' align='center'>
-              Your reservation was successfully{' '}
-              <Typography variant='body2'>
+            <Typography
+              variant="body2"
+              style={{ color: textColor }}
+              align="center"
+            >
+              Your reservation was successfully{" "}
+              <Typography variant="body2" style={{ color: textColor }}>
                 submitted. A confirmation email was
-              </Typography>{' '}
+              </Typography>{" "}
               sent to {email && email}.
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2'>
+            <Typography variant="body2" style={{ color: textColor }}>
               Thanks, {companyName && companyName}
             </Typography>
           </Grid>
@@ -62,10 +81,15 @@ const Confirmation = ({
               onClick={() => {
                 setExpanded(false)
                 setActiveStep(0)
-                logOut()
+
+                setBackgroundScrollStop(false)
+                setResetWidgetInputs(true)
+                setGotAddressError(false)
+                setIsAirportPickupIncluded(false)
+                // logOut()
               }}
-              variant='contained'
-              color='primary'
+              variant="contained"
+              color="primary"
               fullWidth
             >
               Done
@@ -93,6 +117,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, { createReservation, logOut })(
-  Confirmation
-)
+export default connect(mapStateToProps, {
+  createReservation,
+  logOut,
+  setResetWidgetInputs,
+  setGotAddressError,
+  setIsAirportPickupIncluded,
+})(Confirmation)

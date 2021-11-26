@@ -18,6 +18,7 @@ import {
   setResetWidgetInputsActionCreator,
 } from "../../Redux/reset-widget-inputs-reducer"
 import { setIsAirportPickupIncluded } from "../../Redux/form-reducer"
+import { setGateMeetingRedux } from "../../Redux/gate-meeting-reducer"
 
 const useStyles = makeStyles((theme) => ({
   companyContainer: {
@@ -82,6 +83,7 @@ const CompanyProfile = ({
   setResetWidgetInputs,
   setGotAddressError,
   setIsAirportPickupIncluded,
+  setGateMeetingRedux,
 }) => {
   const classes = useStyles()
 
@@ -154,6 +156,7 @@ const CompanyProfile = ({
                   setResetWidgetInputs(true)
                   setGotAddressError(false)
                   setIsAirportPickupIncluded(false)
+                  setGateMeetingRedux(false)
                 }}
               >
                 <CloseWidgetIcon />
@@ -183,4 +186,5 @@ export default connect(mapStateToProps, {
   setResetWidgetInputs,
   setGotAddressError,
   setIsAirportPickupIncluded,
+  setGateMeetingRedux,
 })(CompanyProfile)
