@@ -1,0 +1,26 @@
+.credit-card-input-by-bookinglane {
+  width: 96%;
+  background-color: white;
+  border: none;
+  outline: none;
+  color: black;
+  height: 40px;
+  padding-left: 12px;
+  font-size: 15px;
+  border-radius: 0;
+}
+
+.credit-card-input-by-bookinglane::placeholder {
+  color: grey;
+  opacity: 1;
+  font-size: 14px;
+}
+.credit-card-input-by-bookinglane:-webkit-autofill {
+  height: 0px;
+  border: none;
+  border-radius: 0px;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: black;
+  background-color: transparent !important;
+  background-clip: content-box !important;
+}

@@ -27,6 +27,9 @@ import PrivacyPolicy from "./../../TermsOfUse/PrivacyPolicy"
 import TermsOfUse from "./../../TermsOfUse/TermOfUse"
 import { withStyles } from "@material-ui/styles"
 
+import Cleave from "cleave.js/react"
+import "./PaymentStyles.css"
+
 const useStyles = makeStyles((theme) => ({
   contentContainer: {
     padding: theme.spacing(2),
@@ -248,7 +251,7 @@ const SignupSchema = yup.object().shape({
     phoneNumber: yup.number().typeError("Not a number").required("Required"),
   }),
   paymentInfo: yup.object().shape({
-    cardNumber: yup.string().required("Required"),
+    // cardNumber: yup.string().required("Required"),
     month: yup.string().required("Required"),
     cvc: yup.number().required("Required").typeError("Not a number"),
   }),
@@ -310,12 +313,26 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
 
   const [statesIdError, setStatesIdError] = React.useState(null)
   const [citiesIdError, setCitiesIdError] = React.useState(null)
+  const [cardForPaymentSubmit, setCardForPaymentSubmit] = useState(null)
+  const [cardForPaymentSubmitError, setCardForPaymentSubmitError] =
+    useState(null)
+  const [restrictAmex, setRestrictAmex] = React.useState(false)
 
   const onSubmit = (data) => {
     console.log(data)
     const date = data.paymentInfo.month.split("/")
-    if ((statesId, citiesId)) {
-      setPaymentForm({ ...data }, citiesId, statesId, date)
+    if (
+      statesId &&
+      citiesId &&
+      (cardForPaymentSubmit || formSummary.paymentInfo.cardNumber)
+    ) {
+      setPaymentForm(
+        { ...data },
+        citiesId,
+        statesId,
+        date,
+        cardForPaymentSubmit || formSummary.paymentInfo.cardNumber
+      )
       next()
     } else {
       if (!statesId) {
@@ -328,7 +345,28 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
       } else {
         setCitiesIdError(false)
       }
+      if (!cardForPaymentSubmitError && !formSummary.paymentInfo.cardNumber) {
+        setCardForPaymentSubmitError(true)
+      } else {
+        setCardForPaymentSubmitError(false)
+      }
     }
+  }
+
+  const [cardType, setCardType] = useState("")
+
+  const [creditCardNum, setCreditCardNum] = useState("#### #### #### ####")
+
+  const handleNum = (e) => {
+    setCreditCardNum(e.target.rawValue)
+    setCardForPaymentSubmit(e.target.value)
+    console.log(e.target.value)
+    // console.log(e.target.value);
+  }
+
+  const handleType = (type) => {
+    setCardType(type)
+    console.log(type)
   }
 
   return (
@@ -712,7 +750,7 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
               </Typography>
             </Grid>
             <Grid item>
-              <CustomMaskInput
+              {/* <CustomMaskInput
                 name="paymentInfo.cardNumber"
                 mask="9999-9999-9999-9999"
                 autoComplete="off"
@@ -745,6 +783,24 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                 <p className={classes.error}>
                   {errors.paymentInfo?.cardNumber.message}
                 </p>
+              )} */}
+
+              <Cleave
+                delimiter="-"
+                options={{
+                  creditCard: true,
+                  onCreditCardTypeChanged: handleType,
+                }}
+                name="paymentInfo.cardNumber"
+                error={errors.paymentInfo?.cardNumber ? true : false}
+                onChange={handleNum}
+                placeholder="Card number"
+                className="credit-card-input-by-bookinglane"
+                value={formSummary.paymentInfo.cardNumber}
+              />
+
+              {cardForPaymentSubmitError && (
+                <p className={classes.error}>Required</p>
               )}
             </Grid>
             <Grid item>
@@ -759,7 +815,7 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                     name="paymentInfo.month"
                     mask="99/99"
                     autoComplete="off"
-                    defaultValue={`${formSummary.paymentInfo.month}/${formSummary.paymentInfo.year}`}
+                    // defaultValue={`${formSummary.paymentInfo.month}/${formSummary.paymentInfo.year}`}
                   >
                     {() => (
                       <TextField
@@ -793,7 +849,7 @@ const Payment = ({ next, back, total, formSummary, setPaymentForm }) => {
                   <CustomMaskInput
                     name="paymentInfo.cvc"
                     type="date"
-                    mask="999"
+                    mask={cardType == "amex" ? "9999" : "999"}
                     autoComplete="off"
                     defaultValue={formSummary.paymentInfo.cvc}
                   >
